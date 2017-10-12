@@ -29,7 +29,7 @@ namespace Zadatak_2
             else
                 _integerStorage = new X[initialSize];
         }
-        public void Add(int item)
+        public void Add(X item)
         {
             if (index == _integerStorage.Length - 1)
             {

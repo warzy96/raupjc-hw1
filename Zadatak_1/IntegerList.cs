@@ -48,7 +48,7 @@ namespace Zadatak_1
 
         public bool Contains(int item)
         {
-            for(int i=0; i<index; i++)
+            for(int i=0; i<=index; i++)
             {
                 if (_integerStorage[i] == item) return true;
             }
