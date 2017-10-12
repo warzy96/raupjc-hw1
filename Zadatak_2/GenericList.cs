@@ -48,7 +48,7 @@ namespace Zadatak_2
 
         public bool Contains(X item)
         {
-            for (int i = 0; i < index; i++)
+            for (int i = 0; i <= index; i++)
             {
                 if (_integerStorage[i].Equals(item)) return true;
             }

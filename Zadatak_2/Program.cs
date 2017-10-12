@@ -15,6 +15,8 @@ namespace Zadatak_2
             Console.WriteLine(stringlist.GetElement(0));
             Console.WriteLine(stringlist.GetElement(0).Equals("Larac"));
             Console.WriteLine(stringlist.Count == 1);
+            Console.WriteLine(stringlist.Contains("Larac"));
+            Console.ReadKey();
         }
     }
 }
