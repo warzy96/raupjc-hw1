@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zadatak_1
+namespace Zadatak_2
 {
-    class IntegerList : IIntegerList
+    class GenericList<X> : IGenericList<X>
     {
-        private int[] _integerStorage;
+        private X[] _integerStorage;
         public int Count
         {
             get
@@ -18,23 +18,23 @@ namespace Zadatak_1
         }
         private int index = -1;
 
-        public IntegerList()
+        public GenericList()
         {
-            _integerStorage = new int[4];
+            _integerStorage = new X[4];
         }
-        public IntegerList(int initialSize)
+        public GenericList(int initialSize)
         {
             if (initialSize <= 0)
-                _integerStorage = new int[4];
-            else 
-                _integerStorage = new int[initialSize];
+                _integerStorage = new X[4];
+            else
+                _integerStorage = new X[initialSize];
         }
         public void Add(int item)
         {
-            if(index == _integerStorage.Length - 1)
+            if (index == _integerStorage.Length - 1)
             {
-                int[] oldStorage = _integerStorage;
-                _integerStorage = new int[_integerStorage.Length << 1];
+                X[] oldStorage = _integerStorage;
+                _integerStorage = new X[_integerStorage.Length << 1];
                 Copy(oldStorage);
             }
             _integerStorage[++index] = item;
@@ -42,35 +42,35 @@ namespace Zadatak_1
 
         public void Clear()
         {
-            _integerStorage = new int[_integerStorage.Length];
+            _integerStorage = new X[_integerStorage.Length];
             index = -1;
         }
 
-        public bool Contains(int item)
+        public bool Contains(X item)
         {
-            for(int i=0; i<index; i++)
+            for (int i = 0; i < index; i++)
             {
-                if (_integerStorage[i] == item) return true;
+                if (_integerStorage[i].Equals(item)) return true;
             }
             return false;
         }
 
-        public int GetElement(int index)
+        public X GetElement(int index)
         {
             if (index > _integerStorage.Length) throw new IndexOutOfRangeException();
             return _integerStorage[index];
         }
 
-        public int IndexOf(int item)
+        public int IndexOf(X item)
         {
-            for(int i=0; i<=index; i++)
+            for (int i = 0; i <= index; i++)
             {
-                if (_integerStorage[i] == item) return i;
+                if (_integerStorage[i].Equals(item)) return i;
             }
             return -1;
         }
 
-        public bool Remove(int item)
+        public bool Remove(X item)
         {
             return RemoveAt(IndexOf(item));
         }
@@ -83,9 +83,9 @@ namespace Zadatak_1
             return true;
         }
 
-        private void Copy(int[] oldStorage)
+        private void Copy(X[] oldStorage)
         {
-            for(int i=0; i<oldStorage.Length; i++)
+            for (int i = 0; i < oldStorage.Length; i++)
             {
                 _integerStorage[i] = oldStorage[i];
             }
@@ -94,12 +94,13 @@ namespace Zadatak_1
         private void Adjust(int position)
         {
             int i;
-            for(i=position; i<index; i++)
+            for (i = position; i < index; i++)
             {
                 _integerStorage[i] = _integerStorage[i + 1];
             }
-            _integerStorage[i] = default(int);
+            _integerStorage[i] = default(X);
             index--;
         }
     }
+}
 }
