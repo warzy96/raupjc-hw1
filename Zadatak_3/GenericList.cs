@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zadatak_2
+namespace Zadatak_3
 {
     class GenericList<X> : IGenericList<X>
     {
@@ -102,5 +102,63 @@ namespace Zadatak_2
             _genericStorage[i] = default(X);
             index--;
         }
+        public IEnumerator<X> GetEnumerator()
+        {
+            return new GenericListEnumerator<X>(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        private class GenericListEnumerator<X> : IEnumerator<X>
+        {
+            private GenericList<X> genericList;
+            private int position = -1;
+
+            public GenericListEnumerator(GenericList<X> genericList)
+            {
+                this.genericList = genericList;
+            }
+
+            public X Current
+            {
+                get
+                {
+                    return genericList._genericStorage[position];
+                }
+            }
+
+            object IEnumerator.Current
+            {
+                get
+                {
+                    return Current;
+                }
+            }
+
+            public void Dispose()
+            {
+
+            }
+
+            public bool MoveNext()
+            {
+                if (position == genericList.index)
+                {
+                    return false;
+                }
+                position++;
+                return true;
+
+            }
+
+            public void Reset()
+            {
+                position = default(int);
+            }
+        }
     }
+   
 }

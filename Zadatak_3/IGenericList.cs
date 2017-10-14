@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zadatak_2
+namespace Zadatak_3
 {
-    interface IGenericList <X> 
+    interface IGenericList <X> : IEnumerable<X>
     {
         /// <summary >
         /// Adds an item to the collection .
