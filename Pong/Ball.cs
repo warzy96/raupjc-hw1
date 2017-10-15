@@ -45,12 +45,15 @@ namespace Pong
                 SouthWest
             };
 
-            private float xCoordinate;
-            private float yCoordinate;
+            public float XCoordinate { get; }
+            public float YCoordinate { get; } 
+            public Direction Course { get; }
             public MyVector ()
             {
-                xCoordinate = 0f;
-                yCoordinate = 0f;
+                XCoordinate = 0f;
+                YCoordinate = 0f;
+                Course = Direction.SouthEast;
+
             }
             public MyVector (Direction direction)
             {
@@ -58,34 +61,40 @@ namespace Pong
                 {
                     case Direction.NorthEast:
                         {
-                            xCoordinate = 1f;
-                            yCoordinate = -1f;
+                            XCoordinate = 1f;
+                            YCoordinate = -1f;
                             break;
                         }
                     case Direction.NorthWest:
                         {
-                            xCoordinate = -1f;
-                            yCoordinate = -1f;
+                            XCoordinate = -1f;
+                            YCoordinate = -1f;
                             break;
                         }
                     case Direction.SouthEast:
                         {
-                            xCoordinate = 1f;
-                            yCoordinate = 1f;
+                            XCoordinate = 1f;
+                            YCoordinate = 1f;
                             break;
                         }
                     case Direction.SouthWest:
                         {
-                            xCoordinate = -1f;
-                            yCoordinate = 1f;
+                            XCoordinate = -1f;
+                            YCoordinate = 1f;
                             break;
                         }
                 }
+                Course = direction;
+
             }
-            
-            public static Vector2 operator *(MyVector v1, Vector2 v2)
+
+           public static Vector2 operator *(MyVector vector, float f)
             {
-                return new Vector2(v1.xCoordinate * v2.X, v1.yCoordinate * v2.Y);
+                return new Vector2(f * vector.XCoordinate, f * vector.YCoordinate);
+            }
+            public static Vector2 operator *(MyVector vector, Vector2 vector2)
+            {
+                return new Vector2(vector.XCoordinate * vector2.X, vector.YCoordinate * vector2.Y);
             }
         }
     }

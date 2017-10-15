@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Pong
 {
-    public abstract class Sprite
+    public abstract class Sprite : IPhysicalObject2D
     {
         public float X { get; set; }
         public float Y { get; set; }
@@ -34,6 +34,8 @@ namespace Pong
             spriteBatch.Draw(Texture, new Vector2(X, Y), new Rectangle(0, 0,
             Width, Height), Color.White);
         }
+
+        
 
     }
 }

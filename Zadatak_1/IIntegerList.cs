@@ -10,7 +10,8 @@ namespace Zadatak_1
     {
         /// <summary >
         /// Adds an item to the collection .
-        /// </ summary >
+        /// </ summary >
+
         void Add(int item);
         /// <summary >
         /// Removes the first occurrence of an item from the collection .
@@ -43,6 +44,7 @@ namespace Zadatak_1
         /// <summary >
         /// Determines whether the collection contains a specific value .
         /// </ summary >
-        bool Contains(int item);
+        bool Contains(int item);
+
     }
 }

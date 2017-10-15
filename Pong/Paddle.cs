@@ -13,6 +13,7 @@ namespace Pong
     /// </ summary >
     public class Paddle : Sprite
     {
+        public String Name { get; set; }
         /// <summary >
         /// Current paddle speed in time
         /// </ summary >

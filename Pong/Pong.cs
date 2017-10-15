@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using GenericListClassLibrary;
+using System.Collections.Generic;
+using System;
+
 namespace Pong
 {
     /// <summary>
@@ -13,6 +16,10 @@ namespace Pong
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        public List<Wall> Walls { get; set; }
+        public List<Wall> Goals { get; set; }
+
         /// <summary >
         /// Bottom paddle object
         /// </ summary >
@@ -62,29 +69,40 @@ namespace Pong
         {
             // Screen bounds details . Use this information to set up game objects positions.
             var screenBounds = GraphicsDevice.Viewport.Bounds;
-            PaddleBottom = new Paddle(GameConstants.PaddleDefaultWidth, 
+            PaddleBottom = new Paddle(GameConstants.PaddleDefaultWidth,
                 GameConstants.PaddleDefaultHeight, GameConstants.PaddleDefaultSpeed);
-
-            PaddleBottom.X = MathHelper.Clamp(PaddleBottom.X, screenBounds.Left, screenBounds.Right - PaddleBottom.Width);
-            PaddleTop.X = MathHelper.Clamp(PaddleTop.X, screenBounds.Left, screenBounds.Right - PaddleTop.Width);
+            PaddleBottom.Name = "PaddleBottom";
+            PaddleTop = new Paddle(GameConstants.PaddleDefaultWidth,
+                GameConstants.PaddleDefaultHeight, GameConstants.PaddleDefaultSpeed);
+            PaddleTop.Name = "PaddleTop";
 
             PaddleBottom.X = screenBounds.Width / 2f - PaddleBottom.Width / 2f;
             PaddleBottom.Y = screenBounds.Bottom - PaddleBottom.Height;
 
-
-            PaddleTop = new Paddle(0, 0, 0);
-            PaddleTop.X = 0;
-            PaddleTop.Y = 0;
+            PaddleTop.X = screenBounds.Width / 2f - PaddleBottom.Width / 2f;
+            PaddleTop.Y = screenBounds.Top;
 
 
-            Ball = new Ball(0, 0, 0)
+            Ball = new Ball(GameConstants.DefaultBallSize, GameConstants.DefaultInitialBallSpeed, GameConstants.DefaultIBallBumpSpeedIncreaseFactor)
             {
-                X = 0,
-                Y = 0
+                X = screenBounds.Width / 2,
+                Y = screenBounds.Height / 2,
+                
             };
 
 
             Background = new Background(screenBounds.Width, screenBounds.Height);
+
+            Walls = new List<Wall>()
+            {
+                new Wall (-GameConstants.WallDefaultSize, 0, GameConstants.WallDefaultSize, screenBounds.Height),
+                new Wall (screenBounds.Right, 0, GameConstants.WallDefaultSize, screenBounds.Height),
+            };
+            Goals = new List<Wall>()
+            {
+                new Wall(0, screenBounds.Height, screenBounds.Width, GameConstants.WallDefaultSize),
+                new Wall(0, -GameConstants.WallDefaultSize, screenBounds.Width, GameConstants.WallDefaultSize),
+            };
             // Add our game objects to the sprites that should be drawn collection .
             SpritesForDrawList.Add(Background);
             SpritesForDrawList.Add(PaddleBottom);
@@ -135,6 +153,14 @@ namespace Pong
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            var bounds = GraphicsDevice.Viewport.Bounds;
+            PaddleBottom.X = MathHelper.Clamp(PaddleBottom.X, bounds.Left, bounds.Right - PaddleBottom.Width);
+            PaddleTop.X = MathHelper.Clamp(PaddleTop.X, bounds.Left, bounds.Right - PaddleTop.Width);
+
+
+            var ballPositionChange = Ball.Direction * (float)(gameTime.ElapsedGameTime.TotalMilliseconds * Ball.Speed);
+            Ball.X += ballPositionChange.X;
+            Ball.Y += ballPositionChange.Y;
 
             var touchState = Keyboard.GetState();
             if(touchState.IsKeyDown(Keys.Left))
@@ -159,6 +185,73 @@ namespace Pong
                     * gameTime.ElapsedGameTime.TotalMilliseconds);
             }
 
+            foreach(Wall wall in Walls)
+            {
+                if(CollisionDetector.Overlaps(Ball, wall))
+                {
+                    switch (Ball.Direction.Course)
+                    {
+                        case Ball.MyVector.Direction.SouthEast:
+                            {
+                                Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.SouthWest);
+                                break;
+                            }
+                        case Ball.MyVector.Direction.SouthWest:
+                            {
+                                Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.SouthEast);
+                                break;
+                            }
+                        case Ball.MyVector.Direction.NorthEast:
+                            {
+                                Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.NorthWest);
+                                break;
+                            }
+                        case Ball.MyVector.Direction.NorthWest:
+                            {
+                                Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.NorthEast);
+                                break;
+                            }
+                    }
+                    if(Ball.Speed < GameConstants.DefaultBallMaxSpeed)
+                        Ball.Speed *= GameConstants.DefaultIBallBumpSpeedIncreaseFactor;
+                }
+            }
+
+            if((Ball.Direction.Course.Equals(Ball.MyVector.Direction.SouthEast)
+                || Ball.Direction.Course.Equals(Ball.MyVector.Direction.SouthWest))
+                && CollisionDetector.Overlaps(Ball, PaddleBottom))
+            {
+                if (Ball.Direction.Course.Equals(Ball.MyVector.Direction.SouthEast))
+                {
+                    Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.NorthEast);
+                }
+                else Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.NorthWest);
+                if (Ball.Speed < GameConstants.DefaultBallMaxSpeed)
+                    Ball.Speed *= GameConstants.DefaultIBallBumpSpeedIncreaseFactor;
+            }
+            else if ((Ball.Direction.Course.Equals(Ball.MyVector.Direction.NorthEast)
+               || Ball.Direction.Course.Equals(Ball.MyVector.Direction.NorthWest))
+               && CollisionDetector.Overlaps(Ball, PaddleTop))
+            {
+                if (Ball.Direction.Course.Equals(Ball.MyVector.Direction.NorthEast))
+                {
+                    Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.SouthEast);
+                }
+                else Ball.Direction = new Ball.MyVector(Ball.MyVector.Direction.SouthWest);
+                if (Ball.Speed < GameConstants.DefaultBallMaxSpeed)
+                    Ball.Speed *= GameConstants.DefaultIBallBumpSpeedIncreaseFactor;
+            }
+
+            foreach (Wall goal in Goals)
+            {
+                if (CollisionDetector.Overlaps(Ball, goal))
+                {
+                    Ball.X = bounds.Width / 2f;
+                    Ball.Y = bounds.Height / 2f;
+                    Ball.Speed = GameConstants.DefaultInitialBallSpeed;
+                    HitSound.Play();
+                }
+            }
             base.Update(gameTime);
         }
 
@@ -168,7 +261,6 @@ namespace Pong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             //Start drawing
             spriteBatch.Begin();
