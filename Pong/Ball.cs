@@ -48,13 +48,6 @@ namespace Pong
             public float XCoordinate { get; }
             public float YCoordinate { get; } 
             public Direction Course { get; }
-            public MyVector ()
-            {
-                XCoordinate = 0f;
-                YCoordinate = 0f;
-                Course = Direction.SouthEast;
-
-            }
             public MyVector (Direction direction)
             {
                 switch(direction)
