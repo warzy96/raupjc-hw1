@@ -36,7 +36,7 @@ namespace Pong
                     }
                     else
                     {
-                        if (900f - ball.Y <= float.Epsilon) return true;
+                        if (900f - ball.Y <= float.Epsilon) return true; // 900f height of the screen
                     }
                 }
             }
