@@ -19,11 +19,12 @@ namespace Pong
                 {
                     if (wall.X < 0)
                     {
-                        if ((ball.X - 5f) <= 0) return true;
+                        if ((ball.X - 5f) <= 0) return true;    //5f should be float.Epsilon on a high-end computer 
+                                                                //(because Update method is called more frequently), works like this on my laptop
                     }
                     else
                     {
-                        if ((wall.X - ball.X) <= 20f) return true;
+                        if ((wall.X - ball.X) <= 40f) return true; //40f = ball width
                     }
                 }
 
@@ -35,7 +36,7 @@ namespace Pong
                     }
                     else
                     {
-                        if (900f - ball.Y <= float.Epsilon) return true;
+                        if (900f - ball.Y <= float.Epsilon) return true; // 900f height of the screen
                     }
                 }
             }

@@ -49,6 +49,14 @@ namespace Pong
         /// Generic list that holds Sprites that should be drawn on screen
         /// </ summary >
         private IGenericList<Sprite> SpritesForDrawList = new GenericList<Sprite>();
+
+        //Displays score for top paddle
+        public SpriteFont TopScore { get; private set; }
+
+        //Displays score for bottom paddle
+        public SpriteFont BottomScore { get; private set; }
+        private int scoreTop;
+        private int scoreBottom;
         public Pong()
         {
             graphics = new GraphicsDeviceManager(this)
@@ -82,13 +90,17 @@ namespace Pong
             PaddleTop.X = screenBounds.Width / 2f - PaddleBottom.Width / 2f;
             PaddleTop.Y = screenBounds.Top;
 
-
+            
             Ball = new Ball(GameConstants.DefaultBallSize, GameConstants.DefaultInitialBallSpeed, GameConstants.DefaultIBallBumpSpeedIncreaseFactor)
             {
                 X = screenBounds.Width / 2,
                 Y = screenBounds.Height / 2,
                 
             };
+
+
+            scoreTop = 0;
+            scoreBottom = 0;
 
 
             Background = new Background(screenBounds.Width, screenBounds.Height);
@@ -132,6 +144,10 @@ namespace Pong
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(Music);
+
+            TopScore = Content.Load<SpriteFont>("Score");
+            BottomScore = Content.Load<SpriteFont>("Score");
+
         }
 
         /// <summary>
@@ -246,6 +262,8 @@ namespace Pong
             {
                 if (CollisionDetector.Overlaps(Ball, goal))
                 {
+                    if (Goals.IndexOf(goal) == 0) scoreTop++;
+                    else scoreBottom++;
                     Ball.X = bounds.Width / 2f;
                     Ball.Y = bounds.Height / 2f;
                     Ball.Speed = GameConstants.DefaultInitialBallSpeed;
@@ -261,7 +279,7 @@ namespace Pong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-
+            var bounds = GraphicsDevice.Viewport.Bounds;
             //Start drawing
             spriteBatch.Begin();
             for(int i=0; i<SpritesForDrawList.Count; i++)
@@ -271,6 +289,8 @@ namespace Pong
 
             //End drawing.
             //Send all gathered details to the graphic card in one batch.
+            spriteBatch.DrawString(TopScore, scoreTop.ToString(), new Vector2(bounds.Left, bounds.Center.Y - 25f), Color.White);
+            spriteBatch.DrawString(BottomScore, scoreBottom.ToString(), new Vector2(bounds.Left, bounds.Center.Y + 25f), Color.White);
 
             spriteBatch.End();
             base.Draw(gameTime);
